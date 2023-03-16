@@ -3,18 +3,34 @@
  * and keeps the same order of the categories.
  *
  * @param { Array<Transaction> } transactions
- * @param { Array<Category> } categories
+ * @param { Array<String> } categories
  * @param { Date } start
  * @param { Date } end
  * @returns { Record<string, number> }
  */
-const getBalanceByCategoryInPeriod = (transactions, categories, start, end) => {
+
+type Transaction = {
+  id: string;
+  sourceAccount: string;
+  targetAccount: string;
+  amount: number;
+  currency: string;
+  category: string;
+  time: string;
+};
+
+const getBalanceByCategoryInPeriod = (
+  transactions: Transaction[],
+  categories: string[],
+  start: Date,
+  end: Date
+) => {
   // Obtain the start and end time in milliseconds
   const startTime = +start;
   const endTime = +end;
 
   // Create an object with the categories as keys and 0 as values
-  const memo = categories.reduce(
+  const categoriesBalance: Record<string, number> = categories.reduce(
     (acc, cur) => ({
       ...acc,
       [cur]: 0,
@@ -26,17 +42,17 @@ const getBalanceByCategoryInPeriod = (transactions, categories, start, end) => {
     // Extract the time in milliseconds from the transaction
     const trxTime = +new Date(trx.time);
 
-    // Check if the transaction is in the given period and the category exists in the memo record.
+    // Check if the transaction is in the given period and the category exists in the categoriesBalance record.
     if (
       trxTime >= startTime &&
       trxTime < endTime &&
-      memo.hasOwnProperty(trx.category)
+      !!categoriesBalance?.[trx.category]
     ) {
-      memo[trx.category] += trx.amount;
+      categoriesBalance[trx.category] += trx.amount;
     }
   }
 
-  return memo;
+  return categoriesBalance;
 };
 
 console.log(
