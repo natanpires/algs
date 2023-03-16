@@ -6,10 +6,23 @@
  * @returns Array<Transactions>
  */
 
-const categorizeSimilarTransactions = (transactions) => {
+type Transactions = {
+  id: string;
+  sourceAccount: string;
+  targetAccount: string;
+  amount: number;
+  category?: string;
+  time: string;
+};
+
+const categorizeSimilarTransactions = (transactions: Transactions[]) => {
   // Split the transactions into categorized and uncategorized transactions
-  const categorized = transactions.filter((trx) => trx.category);
-  const uncategorized = transactions.filter((trx) => !trx.category);
+  const categorized: Transactions[] = [],
+    uncategorized: Transactions[] = [];
+
+  for (const trx of transactions) {
+    trx?.category ? categorized.push(trx) : uncategorized.push(trx);
+  }
 
   for (const trx of uncategorized) {
     //  Extract similar transactions from the categorized transactions with the same target account
